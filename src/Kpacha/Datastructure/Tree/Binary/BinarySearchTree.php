@@ -9,7 +9,7 @@ use Kpacha\Datastructure\Tree\AbstractTree;
  *
  * @author Kpacha <kpacha666@gmail.com>
  */
-class BinaryTree extends AbstractTree
+class BinarySearchTree extends AbstractTree
 {
 
     protected function createNode($item)
@@ -31,14 +31,12 @@ class BinaryTree extends AbstractTree
                 $this->insertNode($node, $subtree->right);
             } else if ($node->value < $subtree->value) {
                 $this->insertNode($node, $subtree->left);
-            } else {
-                // reject duplicates
             }
         }
     }
 
     /**
-     * pre-order traverse for insertion
+     * pre-order traverse for node deletion
      * @param BinaryNode $node
      * @param BinaryNode $subtree
      */
@@ -59,18 +57,25 @@ class BinaryTree extends AbstractTree
      */
     protected function removeSubtreeRoot(&$subtree)
     {
-        if ($subtree->left === null && $subtree->right === null) {
-            $subtree = null;
+        if ($subtree->hasChildren()) {
+            $this->promoteChildToRoot($subtree);
         } else {
-            if ($subtree->right !== null && $subtree->left === null) {
-                $subtree = $subtree->right;
-            } else if ($subtree->left !== null && $subtree->right === null) {
-                $subtree = $subtree->left;
-            } else {
-                $mostLeftLeaftOnRightSubtree = $this->getMostLeftLeaf($subtree->right);
-                $subtree->value = $mostLeftLeaftOnRightSubtree->value;
-                $this->removeNode($mostLeftLeaftOnRightSubtree, $subtree->right);
-            }
+            $subtree = null;
+        }
+    }
+
+    /**
+     * Find the best candidate for the promotion and move it to the root
+     * @param BinaryNode $subtree
+     */
+    protected function promoteChildToRoot(&$subtree)
+    {
+        if (($child = $subtree->getChild()) !== false) {
+            $subtree = $child;
+        } else {
+            $mostLeftLeaftOnRightSubtree = $this->getMostLeftLeaf($subtree->right);
+            $subtree->value = $mostLeftLeaftOnRightSubtree->value;
+            $this->removeNode($mostLeftLeaftOnRightSubtree, $subtree->right);
         }
     }
 

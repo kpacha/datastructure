@@ -23,6 +23,30 @@ class BinaryNode extends AbstractNode
     public $right = null;
 
     /**
+     * does the node have any children?
+     * @return boolean
+     */
+    public function hasChildren()
+    {
+        return $this->right !== null || $this->left !== null;
+    }
+
+    /**
+     * does the node have just one child?
+     * @return BinaryNode | false
+     */
+    public function getChild()
+    {
+        $child = false;
+        if ($this->right !== null && $this->left === null) {
+            $child = $this->right;
+        } else if ($this->right === null && $this->left !== null) {
+            $child = $this->left;
+        }
+        return $child;
+    }
+
+    /**
      * in-order dump
      */
     public function dump(\SplQueue $queue)

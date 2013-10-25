@@ -1,4 +1,5 @@
 <?php
+
 namespace Kpacha\Datastructure\Tree;
 
 /**
@@ -8,18 +9,22 @@ namespace Kpacha\Datastructure\Tree;
  */
 abstract class AbstractNode
 {
+
     public $value;
- 
-    public function __construct($item) {
+
+    public function __construct($item)
+    {
         $this->value = $item;
     }
-    
-    public function dump(\SplQueue $queue) {
+
+    public function dump(\SplQueue $queue)
+    {
         $queue->enqueue($this->value);
         return $queue;
     }
-    
+
     abstract public function search($item);
-    
+
     abstract public function prune();
+
 }

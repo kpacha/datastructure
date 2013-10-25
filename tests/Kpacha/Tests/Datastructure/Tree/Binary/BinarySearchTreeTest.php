@@ -2,7 +2,7 @@
 
 namespace Kpacha\Tests\Datastructure\Tree\Binary;
 
-use Kpacha\Datastructure\Tree\Binary\BinaryTree;
+use Kpacha\Datastructure\Tree\Binary\BinarySearchTree;
 use \PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -10,14 +10,14 @@ use \PHPUnit_Framework_TestCase as TestCase;
  *
  * @author Kpacha <kpacha666@gmail.com>
  */
-class BinaryTreeTest extends TestCase
+class BinarySearchTreeTest extends TestCase
 {
 
     protected $_subject;
 
     public function setUp()
     {
-        $this->_subject = new BinaryTree;
+        $this->_subject = new BinarySearchTree;
     }
 
     public function testIsEmpty()
