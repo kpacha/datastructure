@@ -102,7 +102,7 @@ class BinaryNode extends AbstractNode
 
     protected function getChildDepth($child)
     {
-        return ($child !== null) ? $rightTree = $child->getDepth() : 0;
+        return ($child !== null) ? $child->getDepth() : 0;
     }
 
 }
