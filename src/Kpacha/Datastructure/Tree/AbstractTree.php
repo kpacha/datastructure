@@ -31,12 +31,7 @@ abstract class AbstractTree
      */
     public function insert($item)
     {
-        $node = $this->createNode($item);
-        if ($this->isEmpty()) {
-            $this->root = $node;
-        } else {
-            $this->insertNode($node, $this->root);
-        }
+        $this->insertItem($item, $this->root);
     }
 
     /**
@@ -44,7 +39,7 @@ abstract class AbstractTree
      */
     abstract protected function createNode($item);
 
-    abstract protected function insertNode($node, &$subtree);
+    abstract protected function insertItem($node, &$subtree);
 
     /**
      * dump all the tree
@@ -93,11 +88,11 @@ abstract class AbstractTree
     public function remove($item)
     {
         if (!$this->isEmpty()) {
-            $this->removeNode($this->createNode($item), $this->root);
+            $this->removeItem($item, $this->root);
         }
     }
 
-    abstract protected function removeNode($node, &$subtree);
+    abstract protected function removeItem($item, &$subtree);
 
     /**
      * get the depth of the tree

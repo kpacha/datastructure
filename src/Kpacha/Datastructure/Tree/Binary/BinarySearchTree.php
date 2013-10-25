@@ -19,35 +19,35 @@ class BinarySearchTree extends AbstractTree
 
     /**
      * pre-order traverse for insertion
-     * @param BinaryNode $node
+     * @param mixed $item
      * @param BinaryNode $subtree
      */
-    protected function insertNode($node, &$subtree)
+    protected function insertItem($item, &$subtree)
     {
         if ($subtree === null) {
-            $subtree = $node;
+            $subtree = $this->createNode($item);
         } else {
-            if ($node->value > $subtree->value) {
-                $this->insertNode($node, $subtree->right);
-            } else if ($node->value < $subtree->value) {
-                $this->insertNode($node, $subtree->left);
+            if ($item > $subtree->value) {
+                $this->insertItem($item, $subtree->right);
+            } else if ($item < $subtree->value) {
+                $this->insertItem($item, $subtree->left);
             }
         }
     }
 
     /**
      * pre-order traverse for node deletion
-     * @param BinaryNode $node
+     * @param mixed $node
      * @param BinaryNode $subtree
      */
-    protected function removeNode($node, &$subtree)
+    protected function removeItem($item, &$subtree)
     {
-        if ($node->value === $subtree->value) {
+        if ($item === $subtree->value) {
             $this->removeSubtreeRoot($subtree);
-        } else if ($node->value > $subtree->value) {
-            $this->removeNode($node, $subtree->right);
+        } else if ($item > $subtree->value) {
+            $this->removeItem($item, $subtree->right);
         } else {
-            $this->removeNode($node, $subtree->left);
+            $this->removeItem($item, $subtree->left);
         }
     }
 
@@ -75,7 +75,7 @@ class BinarySearchTree extends AbstractTree
         } else {
             $mostLeftLeaftOnRightSubtree = $this->getMostLeftLeaf($subtree->right);
             $subtree->value = $mostLeftLeaftOnRightSubtree->value;
-            $this->removeNode($mostLeftLeaftOnRightSubtree, $subtree->right);
+            $this->removeItem($mostLeftLeaftOnRightSubtree->value, $subtree->right);
         }
     }
 
