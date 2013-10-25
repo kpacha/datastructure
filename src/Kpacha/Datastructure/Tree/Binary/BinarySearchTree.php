@@ -44,10 +44,9 @@ class BinarySearchTree extends AbstractTree
     {
         if ($item === $subtree->value) {
             $this->removeSubtreeRoot($subtree);
-        } else if ($item > $subtree->value) {
-            $this->removeItem($item, $subtree->right);
         } else {
-            $this->removeItem($item, $subtree->left);
+            $side = ($item > $subtree->value) ? 'right' : 'left';
+            $this->removeItem($item, $subtree->$side);
         }
     }
 
