@@ -26,4 +26,15 @@ abstract class AbstractNode
     abstract public function prune();
 
     abstract public function getDepth();
+
+    /**
+     * Ask a subtree for its depth
+     * @param AbstractNode $child
+     * @return int
+     */
+    protected function getChildDepth($child)
+    {
+        return ($child !== null) ? $child->getDepth() : 0;
+    }
+
 }

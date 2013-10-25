@@ -65,11 +65,7 @@ abstract class AbstractTree
     {
         $node = null;
         if (!$this->isEmpty()) {
-            if ($this->root->value === $item) {
-                $node = $this->root;
-            } else {
-                $node = $this->root->search($item);
-            }
+            $node = $this->root->search($item);
         }
         return $node;
     }

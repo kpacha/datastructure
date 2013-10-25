@@ -100,9 +100,4 @@ class BinaryNode extends AbstractNode
         return 1 + max(array($leftTree, $rightTree));
     }
 
-    protected function getChildDepth($child)
-    {
-        return ($child !== null) ? $child->getDepth() : 0;
-    }
-
 }
