@@ -32,6 +32,13 @@ class BalancedBinarySearchTreeTest extends TestCase
         $this->assertEquals(3, $this->_subject->getDepth());
     }
 
+    public function testBalanceIsIdempotent()
+    {
+        $this->testInsertBalanced();
+        $this->_subject->balance();
+        $this->assertEquals(3, $this->_subject->getDepth());
+    }
+
     private function populateWorstCase()
     {
         $this->_subject->insert(3);

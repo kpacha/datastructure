@@ -10,6 +10,9 @@ namespace Kpacha\Datastructure\Tree\Binary;
 class BalancedBinarySearchTree extends BinarySearchTree
 {
 
+    /**
+     * balance the tree in order to improve searchs
+     */
     public function balance()
     {
         $items = $this->dump();
@@ -17,6 +20,10 @@ class BalancedBinarySearchTree extends BinarySearchTree
         $this->insertBalanced($items);
     }
 
+    /**
+     * balance the sorted items and insert them
+     * @param array $items
+     */
     public function insertBalanced($items)
     {
         if (!empty($items)) {
