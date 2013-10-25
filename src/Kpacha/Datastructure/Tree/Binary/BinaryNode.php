@@ -82,7 +82,7 @@ class BinaryNode extends AbstractNode
     public function search($item)
     {
         $node = null;
-        if ($this->value == $item) {
+        if ($this->value->key == $item) {
             $node = $this;
         } else if ($this->left !== null) {
             $node = $this->left->search($item);

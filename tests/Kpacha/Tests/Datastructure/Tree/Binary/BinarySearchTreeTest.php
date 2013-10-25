@@ -3,6 +3,7 @@
 namespace Kpacha\Tests\Datastructure\Tree\Binary;
 
 use Kpacha\Datastructure\Tree\Binary\BinarySearchTree;
+use Kpacha\Datastructure\Index;
 use \PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -14,6 +15,7 @@ class BinarySearchTreeTest extends TestCase
 {
 
     protected $_subject;
+    protected $dummyIndexes = array();
 
     public function setUp()
     {
@@ -41,7 +43,10 @@ class BinarySearchTreeTest extends TestCase
     public function testDump()
     {
         $this->populateBalanced();
-        $this->assertEquals(array(3, 4, 6, 10, 16, 26, 60, 90), $this->_subject->dump());
+        $this->assertEquals(array(
+            $this->dummyIndexes[3], $this->dummyIndexes[4], $this->dummyIndexes[6], $this->dummyIndexes[10],
+            $this->dummyIndexes[16], $this->dummyIndexes[26], $this->dummyIndexes[60], $this->dummyIndexes[90]
+                ), $this->_subject->dump());
     }
 
     public function testDumpEmpty()
@@ -52,13 +57,13 @@ class BinarySearchTreeTest extends TestCase
     public function testSearchAndFoundAtRoot()
     {
         $this->populateBalanced();
-        $this->assertEquals(10, $this->_subject->search(10)->value);
+        $this->assertEquals($this->dummyIndexes[10], $this->_subject->search(10)->value);
     }
 
     public function testSearchAndFound()
     {
         $this->populateBalanced();
-        $this->assertEquals(60, $this->_subject->search(60)->value);
+        $this->assertEquals($this->dummyIndexes[60], $this->_subject->search(60)->value);
     }
 
     public function testSearchAndNotFound()
@@ -69,44 +74,48 @@ class BinarySearchTreeTest extends TestCase
 
     public function testRemoveUniqueNode()
     {
-        $this->_subject->insert(3);
+        $this->_subject->insert($this->buildIndex(3));
         $this->_subject->remove(3);
         $this->assertTrue($this->_subject->isEmpty());
     }
 
     public function testRemoveRootNodeWithOneLeafRight()
     {
-        $this->_subject->insert(3);
-        $this->_subject->insert(4);
+        $entity = $this->buildIndex(4);
+        $this->_subject->insert($this->buildIndex(3));
+        $this->_subject->insert($entity);
         $this->_subject->remove(3);
-        $this->assertEquals(array(4), $this->_subject->dump());
+        $this->assertEquals(array($entity), $this->_subject->dump());
     }
 
     public function testRemoveRootNodeWithOneLeafLeft()
     {
-        $this->_subject->insert(3);
-        $this->_subject->insert(1);
+        $entity = $this->buildIndex(1);
+        $this->_subject->insert($this->buildIndex(3));
+        $this->_subject->insert($entity);
         $this->_subject->remove(3);
-        $this->assertEquals(array(1), $this->_subject->dump());
+        $this->assertEquals(array($entity), $this->_subject->dump());
     }
 
     public function testRemoveRootNodeWithLeaves()
     {
-        $this->_subject->insert(3);
-        $this->_subject->insert(1);
-        $this->_subject->insert(5);
+        $entities = array($this->buildIndex(1), $this->buildIndex(5));
+        $this->_subject->insert($this->buildIndex(3));
+        $this->_subject->insert($entities[0]);
+        $this->_subject->insert($entities[1]);
         $this->_subject->remove(3);
-        $this->assertEquals(array(1, 5), $this->_subject->dump());
+        $this->assertEquals($entities, $this->_subject->dump());
     }
 
     public function testRemoveNotRootNode()
     {
-        $this->_subject->insert(3);
-        $this->_subject->insert(1);
-        $this->_subject->insert(5);
-        $this->_subject->insert(4);
+        $entities = array($this->buildIndex(1), $this->buildIndex(4), $this->buildIndex(5));
+        $this->_subject->insert($entities[0]);
+        $this->_subject->insert($entities[1]);
+        $this->_subject->insert($this->buildIndex(3));
+        $this->_subject->insert($entities[2]);
         $this->_subject->remove(3);
-        $this->assertEquals(array(1, 4, 5), $this->_subject->dump());
+        $this->assertEquals($entities, $this->_subject->dump());
     }
 
     public function testRemoveNode()
@@ -114,7 +123,10 @@ class BinarySearchTreeTest extends TestCase
         $this->populateBalanced();
         $this->_subject->remove(16);
         $this->_subject->remove(6);
-        $this->assertEquals(array(3, 4, 10, 26, 60, 90), $this->_subject->dump());
+        $this->assertEquals(array(
+            $this->dummyIndexes[3], $this->dummyIndexes[4], $this->dummyIndexes[10],
+            $this->dummyIndexes[26], $this->dummyIndexes[60], $this->dummyIndexes[90]
+                ), $this->_subject->dump());
     }
 
     public function testGetDepth()
@@ -125,14 +137,28 @@ class BinarySearchTreeTest extends TestCase
 
     private function populateBalanced()
     {
-        $this->_subject->insert(10);
-        $this->_subject->insert(3);
-        $this->_subject->insert(6);
-        $this->_subject->insert(90);
-        $this->_subject->insert(4);
-        $this->_subject->insert(26);
-        $this->_subject->insert(16);
-        $this->_subject->insert(60);
+        $this->dummyIndexes = array(
+            10 => $this->buildIndex(10),
+            3 => $this->buildIndex(3),
+            6 => $this->buildIndex(6),
+            90 => $this->buildIndex(90),
+            4 => $this->buildIndex(4),
+            26 => $this->buildIndex(26),
+            16 => $this->buildIndex(16),
+            60 => $this->buildIndex(60)
+        );
+
+        foreach ($this->dummyIndexes as $entity) {
+            $this->_subject->insert($entity);
+        }
+    }
+
+    private function buildIndex($key, $value = 'some dummy data')
+    {
+        $entity = new Index;
+        $entity->key = $key;
+        $entity->value = $value;
+        return $entity;
     }
 
 }

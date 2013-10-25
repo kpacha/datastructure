@@ -27,9 +27,9 @@ class BinarySearchTree extends AbstractTree
         if ($subtree === null) {
             $subtree = $this->createNode($item);
         } else {
-            if ($item > $subtree->value) {
+            if ($item->key > $subtree->value->key) {
                 $this->insertItem($item, $subtree->right);
-            } else if ($item < $subtree->value) {
+            } else if ($item->key < $subtree->value->key) {
                 $this->insertItem($item, $subtree->left);
             }
         }
@@ -37,16 +37,16 @@ class BinarySearchTree extends AbstractTree
 
     /**
      * pre-order traverse for node deletion
-     * @param mixed $node
+     * @param mixed $key
      * @param BinaryNode $subtree
      */
-    protected function removeItem($item, &$subtree)
+    protected function removeItem($key, &$subtree)
     {
-        if ($item === $subtree->value) {
+        if ($key === $subtree->value->key) {
             $this->removeSubtreeRoot($subtree);
         } else {
-            $side = ($item > $subtree->value) ? 'right' : 'left';
-            $this->removeItem($item, $subtree->$side);
+            $side = ($key > $subtree->value->key) ? 'right' : 'left';
+            $this->removeItem($key, $subtree->$side);
         }
     }
 
@@ -74,7 +74,7 @@ class BinarySearchTree extends AbstractTree
         } else {
             $mostLeftLeaftOnRightSubtree = $this->getMostLeftLeaf($subtree->right);
             $subtree->value = $mostLeftLeaftOnRightSubtree->value;
-            $this->removeItem($mostLeftLeaftOnRightSubtree->value, $subtree->right);
+            $this->removeItem($mostLeftLeaftOnRightSubtree->value->key, $subtree->right);
         }
     }
 

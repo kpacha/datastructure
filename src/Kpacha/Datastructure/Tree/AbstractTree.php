@@ -81,14 +81,14 @@ abstract class AbstractTree
         }
     }
 
-    public function remove($item)
+    public function remove($key)
     {
         if (!$this->isEmpty()) {
-            $this->removeItem($item, $this->root);
+            $this->removeItem($key, $this->root);
         }
     }
 
-    abstract protected function removeItem($item, &$subtree);
+    abstract protected function removeItem($key, &$subtree);
 
     /**
      * get the depth of the tree
