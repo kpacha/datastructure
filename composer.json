@@ -1,0 +1,26 @@
+{
+    "name": "Kpacha/Datastructre",
+    "type": "",
+    "description": "...",
+    "keywords": ["data structures"],
+    "homepage": "https://github.com/kpacha/datastructure",
+    "license": "MIT",
+    "authors": [
+    {
+        "name": "Kpacha"
+    }
+    ],
+    "require": {
+        "php": "5.5.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Kpacha\\Datastructure\\": "src",
+            "Kpacha\\Tests\\Datastructre\\": "tests"
+        }
+    },
+    "minimum-stability": "dev"
+}
