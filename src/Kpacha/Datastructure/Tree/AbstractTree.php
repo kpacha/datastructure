@@ -90,4 +90,12 @@ abstract class AbstractTree
         }
     }
 
+    public function remove($item)
+    {
+        if (!$this->isEmpty()) {
+            $this->removeNode($this->createNode($item), $this->root);
+        }
+    }
+
+    abstract protected function removeNode($node, &$subtree);
 }

@@ -40,10 +40,8 @@ class BinaryTreeTest extends TestCase
 
     public function testDump()
     {
-        $this->_subject->insert(7);
-        $this->_subject->insert(3);
-        $this->_subject->insert(9);
-        $this->assertEquals('3, 7, 9, ', $this->_subject->dump());
+        $this->populate();
+        $this->assertEquals('3, 4, 6, 10, 16, 26, 60, 90, ', $this->_subject->dump());
     }
 
     public function testDumpEmpty()
@@ -67,6 +65,56 @@ class BinaryTreeTest extends TestCase
     {
         $this->populate();
         $this->assertNull($this->_subject->search(8));
+    }
+
+    public function testRemoveUniqueNode()
+    {
+        $this->_subject->insert(3);
+        $this->_subject->remove(3);
+        $this->assertTrue($this->_subject->isEmpty());
+    }
+
+    public function testRemoveRootNodeWithOneLeafRight()
+    {
+        $this->_subject->insert(3);
+        $this->_subject->insert(4);
+        $this->_subject->remove(3);
+        $this->assertEquals('4, ', $this->_subject->dump());
+    }
+
+    public function testRemoveRootNodeWithOneLeafLeft()
+    {
+        $this->_subject->insert(3);
+        $this->_subject->insert(1);
+        $this->_subject->remove(3);
+        $this->assertEquals('1, ', $this->_subject->dump());
+    }
+
+    public function testRemoveRootNodeWithLeaves()
+    {
+        $this->_subject->insert(3);
+        $this->_subject->insert(1);
+        $this->_subject->insert(5);
+        $this->_subject->remove(3);
+        $this->assertEquals('1, 5, ', $this->_subject->dump());
+    }
+
+    public function testRemoveNotRootNode()
+    {
+        $this->_subject->insert(3);
+        $this->_subject->insert(1);
+        $this->_subject->insert(5);
+        $this->_subject->insert(4);
+        $this->_subject->remove(3);
+        $this->assertEquals('1, 4, 5, ', $this->_subject->dump());
+    }
+
+    public function testRemoveNode()
+    {
+        $this->populate();
+        $this->_subject->remove(16);
+        $this->_subject->remove(6);
+        $this->assertEquals('3, 4, 10, 26, 60, 90, ', $this->_subject->dump());
     }
     
     private function populate()
