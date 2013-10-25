@@ -3,7 +3,7 @@
 namespace Kpacha\Datastructure\Tree;
 
 /**
- * Abstrcat Node
+ * Abstract Node
  *
  * @author Kpacha <kpacha666@gmail.com>
  */
@@ -17,14 +17,13 @@ abstract class AbstractNode
         $this->value = $item;
     }
 
-    public function dump(\SplQueue $queue)
-    {
-        $queue->enqueue($this->value);
-        return $queue;
-    }
+    abstract public function dump(\SplQueue $queue);
+
+    abstract public function hasChildren();
 
     abstract public function search($item);
 
     abstract public function prune();
 
+    abstract public function getDepth();
 }

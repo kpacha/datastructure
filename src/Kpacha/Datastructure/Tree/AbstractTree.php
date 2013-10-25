@@ -51,11 +51,11 @@ abstract class AbstractTree
      */
     public function dump()
     {
-        $values = '';
+        $values = array();
         if (!$this->isEmpty()) {
             $queue = $this->root->dump(new \SplQueue());
             while (!$queue->isEmpty()) {
-                $values .= $queue->dequeue() . ", ";
+                $values[] = $queue->dequeue();
             }
         }
         return $values;
@@ -98,4 +98,14 @@ abstract class AbstractTree
     }
 
     abstract protected function removeNode($node, &$subtree);
+
+    /**
+     * get the depth of the tree
+     * @return int
+     */
+    public function getDepth()
+    {
+        return ($this->isEmpty()) ? 0 : $this->root->getDepth() - 1;
+    }
+
 }

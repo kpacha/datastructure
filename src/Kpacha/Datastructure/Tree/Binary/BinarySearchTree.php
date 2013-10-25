@@ -5,7 +5,7 @@ namespace Kpacha\Datastructure\Tree\Binary;
 use Kpacha\Datastructure\Tree\AbstractTree;
 
 /**
- * Simple BinaryTree
+ * Simple BinarySearchTree
  *
  * @author Kpacha <kpacha666@gmail.com>
  */

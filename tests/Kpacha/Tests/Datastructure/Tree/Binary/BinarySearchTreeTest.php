@@ -6,7 +6,7 @@ use Kpacha\Datastructure\Tree\Binary\BinarySearchTree;
 use \PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * BinaryTreeTest
+ * BinarySearchTreeTest
  *
  * @author Kpacha <kpacha666@gmail.com>
  */
@@ -41,12 +41,12 @@ class BinarySearchTreeTest extends TestCase
     public function testDump()
     {
         $this->populate();
-        $this->assertEquals('3, 4, 6, 10, 16, 26, 60, 90, ', $this->_subject->dump());
+        $this->assertEquals(array(3, 4, 6, 10, 16, 26, 60, 90), $this->_subject->dump());
     }
 
     public function testDumpEmpty()
     {
-        $this->assertEquals('', $this->_subject->dump());
+        $this->assertEquals(array(), $this->_subject->dump());
     }
 
     public function testSearchAndFoundAtRoot()
@@ -79,7 +79,7 @@ class BinarySearchTreeTest extends TestCase
         $this->_subject->insert(3);
         $this->_subject->insert(4);
         $this->_subject->remove(3);
-        $this->assertEquals('4, ', $this->_subject->dump());
+        $this->assertEquals(array(4), $this->_subject->dump());
     }
 
     public function testRemoveRootNodeWithOneLeafLeft()
@@ -87,7 +87,7 @@ class BinarySearchTreeTest extends TestCase
         $this->_subject->insert(3);
         $this->_subject->insert(1);
         $this->_subject->remove(3);
-        $this->assertEquals('1, ', $this->_subject->dump());
+        $this->assertEquals(array(1), $this->_subject->dump());
     }
 
     public function testRemoveRootNodeWithLeaves()
@@ -96,7 +96,7 @@ class BinarySearchTreeTest extends TestCase
         $this->_subject->insert(1);
         $this->_subject->insert(5);
         $this->_subject->remove(3);
-        $this->assertEquals('1, 5, ', $this->_subject->dump());
+        $this->assertEquals(array(1, 5), $this->_subject->dump());
     }
 
     public function testRemoveNotRootNode()
@@ -106,7 +106,7 @@ class BinarySearchTreeTest extends TestCase
         $this->_subject->insert(5);
         $this->_subject->insert(4);
         $this->_subject->remove(3);
-        $this->assertEquals('1, 4, 5, ', $this->_subject->dump());
+        $this->assertEquals(array(1, 4, 5), $this->_subject->dump());
     }
 
     public function testRemoveNode()
@@ -114,9 +114,15 @@ class BinarySearchTreeTest extends TestCase
         $this->populate();
         $this->_subject->remove(16);
         $this->_subject->remove(6);
-        $this->assertEquals('3, 4, 10, 26, 60, 90, ', $this->_subject->dump());
+        $this->assertEquals(array(3, 4, 10, 26, 60, 90), $this->_subject->dump());
     }
-    
+
+    public function testGetDepth()
+    {
+        $this->populate();
+        $this->assertEquals(3, $this->_subject->getDepth());
+    }
+
     private function populate()
     {
         $this->_subject->insert(10);
