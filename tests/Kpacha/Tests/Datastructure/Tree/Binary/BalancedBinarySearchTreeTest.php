@@ -26,6 +26,12 @@ class BalancedBinarySearchTreeTest extends TestCase
         $this->assertEquals(3, $this->_subject->getDepth());
     }
 
+    public function testInsertBalanced()
+    {
+        $this->_subject->insertBalanced(array(-3, 0, 8, 19, 20, 31, 60, 61));
+        $this->assertEquals(3, $this->_subject->getDepth());
+    }
+
     private function populateWorstCase()
     {
         $this->_subject->insert(3);

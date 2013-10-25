@@ -95,10 +95,9 @@ class BinaryNode extends AbstractNode
 
     public function getDepth()
     {
-        $depth = 1;
         $leftTree = $this->getChildDepth($this->left);
         $rightTree = $this->getChildDepth($this->right);
-        return $depth + max(array($leftTree, $rightTree));
+        return 1 + max(array($leftTree, $rightTree));
     }
 
     protected function getChildDepth($child)

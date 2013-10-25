@@ -27,20 +27,20 @@ class BinarySearchTreeTest extends TestCase
 
     public function testIsNotEmpty()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->assertFalse($this->_subject->isEmpty());
     }
 
     public function testPrune()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->_subject->prune();
         $this->assertTrue($this->_subject->isEmpty());
     }
 
     public function testDump()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->assertEquals(array(3, 4, 6, 10, 16, 26, 60, 90), $this->_subject->dump());
     }
 
@@ -51,19 +51,19 @@ class BinarySearchTreeTest extends TestCase
 
     public function testSearchAndFoundAtRoot()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->assertEquals(10, $this->_subject->search(10)->value);
     }
 
     public function testSearchAndFound()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->assertEquals(60, $this->_subject->search(60)->value);
     }
 
     public function testSearchAndNotFound()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->assertNull($this->_subject->search(8));
     }
 
@@ -111,7 +111,7 @@ class BinarySearchTreeTest extends TestCase
 
     public function testRemoveNode()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->_subject->remove(16);
         $this->_subject->remove(6);
         $this->assertEquals(array(3, 4, 10, 26, 60, 90), $this->_subject->dump());
@@ -119,11 +119,11 @@ class BinarySearchTreeTest extends TestCase
 
     public function testGetDepth()
     {
-        $this->populate();
+        $this->populateBalanced();
         $this->assertEquals(3, $this->_subject->getDepth());
     }
 
-    private function populate()
+    private function populateBalanced()
     {
         $this->_subject->insert(10);
         $this->_subject->insert(3);
