@@ -67,8 +67,6 @@ class BinaryTreeTest extends TestCase
     {
         $this->populate();
         $this->assertNull($this->_subject->search(8));
-        
-        var_dump($this->_subject);
     }
     
     private function populate()
