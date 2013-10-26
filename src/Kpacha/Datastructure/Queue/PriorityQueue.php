@@ -3,7 +3,7 @@
 namespace Kpacha\Datastructure\Queue;
 
 /**
- * Description of PriorityQueue
+ * Simple SplPriorityQueue implementation
  *
  * @author Kpacha <kpacha666@gmail.com>
  */
