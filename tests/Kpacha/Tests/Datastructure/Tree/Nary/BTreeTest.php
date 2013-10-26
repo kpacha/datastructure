@@ -56,6 +56,17 @@ class BTreeTest extends TestCase
         $this->assertEquals(1, $this->_subject->getDepth());
     }
 
+    public function testFourthInsertion()
+    {
+        $indexes = array($this->buildIndex(1), $this->buildIndex(2), $this->buildIndex(3), $this->buildIndex(4));
+        $this->_subject->insert($indexes[0]);
+        $this->_subject->insert($indexes[1]);
+        $this->_subject->insert($indexes[3]);
+        $this->_subject->insert($indexes[2]);
+        $this->assertEquals($indexes, $this->_subject->dump());
+        $this->assertEquals(1, $this->_subject->getDepth());
+    }
+
     private function buildIndex($key, $value = 'some dummy data')
     {
         $entity = new Index;
