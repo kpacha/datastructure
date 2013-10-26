@@ -25,6 +25,7 @@ class BTreeTest extends TestCase
     {
         $this->_subject->insert($this->buildIndex(1));
         $this->assertFalse($this->_subject->isEmpty());
+        $this->assertEquals(0, $this->_subject->getDepth());
     }
 
     public function testSecondInsert()
@@ -33,6 +34,7 @@ class BTreeTest extends TestCase
         $this->_subject->insert($indexes[0]);
         $this->_subject->insert($indexes[1]);
         $this->assertEquals($indexes, $this->_subject->dump());
+        $this->assertEquals(0, $this->_subject->getDepth());
     }
 
     public function testSecondInsertSorted()
@@ -41,6 +43,7 @@ class BTreeTest extends TestCase
         $this->_subject->insert($indexes[1]);
         $this->_subject->insert($indexes[0]);
         $this->assertEquals($indexes, $this->_subject->dump());
+        $this->assertEquals(0, $this->_subject->getDepth());
     }
 
     public function testSplitDetection()
@@ -50,6 +53,7 @@ class BTreeTest extends TestCase
         $this->_subject->insert($indexes[1]);
         $this->_subject->insert($indexes[2]);
         $this->assertEquals($indexes, $this->_subject->dump());
+        $this->assertEquals(1, $this->_subject->getDepth());
     }
 
     private function buildIndex($key, $value = 'some dummy data')

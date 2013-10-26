@@ -3,6 +3,8 @@
 namespace Kpacha\Datastructure\Tree\Nary;
 
 use Kpacha\Datastructure\Tree\AbstractNode;
+use \MultipleIterator;
+use \ArrayIterator;
 
 /**
  * Simple implementation of BNode
@@ -27,14 +29,17 @@ class BNode extends AbstractNode
 
     public function dump(\SplQueue $queue)
     {
-        foreach ($this->value as $key => $item) {
-            if (isset($this->subNodes[$key])) {
-                $queue = $this->subNodes[$key]->dump($queue);
+        $multiIterator = new MultipleIterator(MultipleIterator::MIT_NEED_ANY | MultipleIterator::MIT_KEYS_ASSOC);
+        $multiIterator->attachIterator(new ArrayIterator($this->value), 'keys');
+        $multiIterator->attachIterator(new ArrayIterator($this->subNodes), 'subNodes');
+        
+        foreach($multiIterator as $pair){
+            if(isset($pair['subNodes'])){
+                $queue = $pair['subNodes']->dump($queue);
             }
-            $queue->enqueue($item);
-        }
-        if (isset($this->subNodes[count($this->value) - 1])) {
-            $queue = $this->subNodes[count($this->value) - 1]->dump($queue);
+            if(isset($pair['keys'])){
+                $queue->enqueue($pair['keys']);
+            }
         }
         return $queue;
     }
@@ -77,9 +82,12 @@ class BNode extends AbstractNode
 
     public function split()
     {
-        $centerKey = $this->value[$this->minRange];
-        unset($this->value[$this->minRange]);
         $chunks = array_chunk($this->value, $this->minRange, true);
+        $centerKey = array_shift($chunks[1]);
+        if (!count($chunks[1]) && isset($chunks[2])) {
+            $chunks[1] = $chunks[2];
+            unset($chunks[2]);
+        }
 
         $lowerChild = new BNode($chunks[0]);
         $upperChild = new BNode($chunks[1]);
