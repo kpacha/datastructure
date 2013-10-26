@@ -99,12 +99,12 @@ class BinarySearchTreeTest extends TestCase
 
     public function testRemoveRootNodeWithLeaves()
     {
-        $entities = array($this->buildIndex(1), $this->buildIndex(5));
-        $this->_subject->insert($this->buildIndex(3));
-        $this->_subject->insert($entities[0]);
-        $this->_subject->insert($entities[1]);
-        $this->_subject->remove(3);
-        $this->assertEquals($entities, $this->_subject->dump());
+        $this->populateBalanced();
+        $this->_subject->remove(10);
+        $this->assertEquals(array(
+            $this->dummyIndexes[3], $this->dummyIndexes[4], $this->dummyIndexes[6],
+            $this->dummyIndexes[16], $this->dummyIndexes[26], $this->dummyIndexes[60], $this->dummyIndexes[90]
+                ), $this->_subject->dump());
     }
 
     public function testRemoveNotRootNode()

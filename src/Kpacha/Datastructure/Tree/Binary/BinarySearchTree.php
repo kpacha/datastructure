@@ -27,9 +27,10 @@ class BinarySearchTree extends AbstractTree
         if ($subtree === null) {
             $subtree = $this->createNode($item);
         } else {
-            if ($item->key > $subtree->value->key) {
+            $compResult = $item->compareWith($subtree->value);
+            if ($compResult == 1) {
                 $this->insertItem($item, $subtree->right);
-            } else if ($item->key < $subtree->value->key) {
+            } else if ($compResult == -1) {
                 $this->insertItem($item, $subtree->left);
             }
         }
