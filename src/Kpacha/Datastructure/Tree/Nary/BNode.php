@@ -27,6 +27,11 @@ class BNode extends AbstractNode
         $this->maxRange = 2 * $minRange;
     }
 
+    /**
+     * in-order traverse for dumping the indexed items
+     * @param \SplQueue $queue
+     * @return \SplQueue
+     */
     public function dump(\SplQueue $queue)
     {
         $multiIterator = new MultipleIterator(MultipleIterator::MIT_NEED_ANY | MultipleIterator::MIT_KEYS_ASSOC);
@@ -40,6 +45,12 @@ class BNode extends AbstractNode
         return $queue;
     }
 
+    /**
+     * dump the child node into the queue if it is set
+     * @param array $pair
+     * @param \SplQueue $queue
+     * @return \SplQueue
+     */
     protected function dumpChild(array $pair, \SplQueue $queue)
     {
         if (isset($pair['subNodes'])) {
@@ -48,6 +59,12 @@ class BNode extends AbstractNode
         return $queue;
     }
 
+    /**
+     * dump the indexed key into the queue if it is set
+     * @param array $pair
+     * @param \SplQueue $queue
+     * @return \SplQueue
+     */
     protected function dumpKey(array $pair, \SplQueue $queue)
     {
         if (isset($pair['keys'])) {
@@ -56,6 +73,10 @@ class BNode extends AbstractNode
         return $queue;
     }
 
+    /**
+     * get the depth of the tree just asking one subnode because the B-Tree has all its leaves in the same level
+     * @return int
+     */
     public function getDepth()
     {
         $depth = 1;
@@ -70,6 +91,9 @@ class BNode extends AbstractNode
         return count($this->subNodes) > 0;
     }
 
+    /**
+     * prune the node (its keys and children too)
+     */
     public function prune()
     {
         foreach ($this->subNodes as $subNode) {
@@ -92,6 +116,9 @@ class BNode extends AbstractNode
 //        return $result;
     }
 
+    /**
+     * split the node into two subnodes and send the center key to the resultant parent
+     */
     public function split()
     {
         $chunks = array_chunk($this->value, $this->minRange, true);
