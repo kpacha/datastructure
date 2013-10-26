@@ -32,14 +32,26 @@ class BNode extends AbstractNode
         $multiIterator = new MultipleIterator(MultipleIterator::MIT_NEED_ANY | MultipleIterator::MIT_KEYS_ASSOC);
         $multiIterator->attachIterator(new ArrayIterator($this->value), 'keys');
         $multiIterator->attachIterator(new ArrayIterator($this->subNodes), 'subNodes');
-        
-        foreach($multiIterator as $pair){
-            if(isset($pair['subNodes'])){
-                $queue = $pair['subNodes']->dump($queue);
-            }
-            if(isset($pair['keys'])){
-                $queue->enqueue($pair['keys']);
-            }
+
+        foreach ($multiIterator as $pair) {
+            $queue = $this->dumpChild($pair, $queue);
+            $queue = $this->dumpKey($pair, $queue);
+        }
+        return $queue;
+    }
+
+    protected function dumpChild(array $pair, \SplQueue $queue)
+    {
+        if (isset($pair['subNodes'])) {
+            $queue = $pair['subNodes']->dump($queue);
+        }
+        return $queue;
+    }
+
+    protected function dumpKey(array $pair, \SplQueue $queue)
+    {
+        if (isset($pair['keys'])) {
+            $queue->enqueue($pair['keys']);
         }
         return $queue;
     }
