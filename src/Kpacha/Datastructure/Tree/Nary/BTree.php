@@ -32,10 +32,14 @@ class BTree extends AbstractTree
         if ($subtree === null) {
             $subtree = $this->createNode($item);
         } else {
-            $subtree->value[$item->key] = $item;
-            usort($subtree->value, array('\Kpacha\Datastructure\Index', 'compare'));
-            if (count($subtree->value) > 2 * $this->minRange) {
-                $subtree->split();
+            if (!$subtree->hasChildren()) {
+                $subtree->value[$item->key] = $item;
+                usort($subtree->value, array('\Kpacha\Datastructure\Index', 'compare'));
+                if (count($subtree->value) > 2 * $this->minRange) {
+                    $subtree->split();
+                }
+            } else {
+                $this->insertItem($item, $subtree->getSubNodeWhereInsert($item));
             }
         }
     }

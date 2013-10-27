@@ -34,15 +34,21 @@ class BNode extends AbstractNode
      */
     public function dump(\SplQueue $queue)
     {
-        $multiIterator = new MultipleIterator(MultipleIterator::MIT_NEED_ANY | MultipleIterator::MIT_KEYS_ASSOC);
-        $multiIterator->attachIterator(new ArrayIterator($this->value), 'keys');
-        $multiIterator->attachIterator(new ArrayIterator($this->subNodes), 'subNodes');
+        $multiIterator = $this->getMultipleIterator();
 
         foreach ($multiIterator as $pair) {
             $queue = $this->dumpChild($pair, $queue);
             $queue = $this->dumpKey($pair, $queue);
         }
         return $queue;
+    }
+
+    protected function getMultipleIterator()
+    {
+        $multiIterator = new MultipleIterator(MultipleIterator::MIT_NEED_ANY | MultipleIterator::MIT_KEYS_ASSOC);
+        $multiIterator->attachIterator(new ArrayIterator($this->value), 'keys');
+        $multiIterator->attachIterator(new ArrayIterator($this->subNodes), 'subNodes');
+        return $multiIterator;
     }
 
     /**
@@ -133,6 +139,25 @@ class BNode extends AbstractNode
 
         $this->value = array($centerKey->key => $centerKey);
         $this->subNodes = array($lowerChild, $upperChild);
+    }
+
+    public function getSubNodeWhereInsert($item)
+    {
+        $multiIterator = $this->getMultipleIterator();
+
+        $subNode = null;
+        foreach ($multiIterator as $pair) {
+            if (isset($pair['keys'])) {
+                if ($pair['keys']->compareWith($item) == 1) {
+                    $subNode = $pair['subNodes'];
+                    break;
+                }
+            } else {
+                $subNode = $pair['subNodes'];
+                break;
+            }
+        }
+        return $subNode;
     }
 
 }
