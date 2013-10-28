@@ -166,26 +166,29 @@ class BNode extends AbstractNode
 
     protected function transferChildren($centerKey, &$lowerChild, &$upperChild)
     {
-        $formerKey = null;
+        $prevKey = null;
         foreach ($this->value as $keyToMove) {
-            $comparationResult = $keyToMove->compareWith($centerKey);
-            $range = $this->getRangeString($formerKey, $keyToMove);
-            if ($comparationResult < 1) {
-                if (isset($this->subNodes[$range])) {
-                    $newKey = $comparationResult ? $range : $this->getRangeString($formerKey, null);
-                    $lowerChild->setSubNode($newKey, $this->subNodes[$range]);
-                }
-            } else {
-                if (isset($this->subNodes[$range])) {
-                    $newKey = ($formerKey->compareWith($centerKey)) ? $range : $this->getRangeString(null, $keyToMove);
-                    $upperChild->setSubNode($newKey, $this->subNodes[$range]);
-                }
-            }
-            $formerKey = $keyToMove;
+            $this->transferChild($centerKey, $lowerChild, $upperChild, $prevKey, $keyToMove);
+            $prevKey = $keyToMove;
         }
-        $range = $this->getRangeString($formerKey, null);
+        $range = $this->getRangeString($prevKey, null);
         if (isset($this->subNodes[$range])) {
             $upperChild->setSubNode($range, $this->subNodes[$range]);
+        }
+    }
+
+    protected function transferChild($centerKey, &$lowerChild, &$upperChild, $prevKey, $keyToMove)
+    {
+        $comparationResult = $keyToMove->compareWith($centerKey);
+        $range = $this->getRangeString($prevKey, $keyToMove);
+        if (isset($this->subNodes[$range])) {
+            if ($comparationResult < 1) {
+                $newKey = $comparationResult ? $range : $this->getRangeString($prevKey, null);
+                $lowerChild->setSubNode($newKey, $this->subNodes[$range]);
+            } else {
+                $newKey = ($prevKey->compareWith($centerKey)) ? $range : $this->getRangeString(null, $keyToMove);
+                $upperChild->setSubNode($newKey, $this->subNodes[$range]);
+            }
         }
     }
 
