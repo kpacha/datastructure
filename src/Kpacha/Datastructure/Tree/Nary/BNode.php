@@ -21,7 +21,7 @@ class BNode extends AbstractNode
     protected $subNodes = array();
     protected $parent = null;
 
-    public function __construct($items,  $minRange = self::MIN_RANGE)
+    public function __construct($items, $minRange = self::MIN_RANGE)
     {
         parent::__construct((is_array($items) ? $items : array($items->key => $items)));
         $this->minRange = $minRange;
@@ -139,20 +139,59 @@ class BNode extends AbstractNode
             unset($chunks[2]);
         }
 
-        $lowerRange = new Range(null, $centerKey);
         $lowerChild = new BNode($chunks[0]);
         $lowerChild->setParent($this);
-        $upperRange = new Range($centerKey, null);
         $upperChild = new BNode($chunks[1]);
         $upperChild->setParent($this);
 
+        $this->transferChildren($centerKey, $lowerChild, $upperChild);
+
+        $lowerRange = $this->getRangeString(null, $centerKey);
+        $upperRange = $this->getRangeString($centerKey, null);
+
         $this->value = array($centerKey);
-        $this->subNodes = array($lowerRange->__toString() => $lowerChild, $upperRange->__toString() => $upperChild);
+        $this->subNodes = array($lowerRange => $lowerChild, $upperRange => $upperChild);
 
         if ($this->parent) {
             $this->parent->merge($this);
             $this->subNodes = $this->value = null;
         }
+    }
+
+    protected function getRangeString($from, $to)
+    {
+        $range = new Range($from, $to);
+        return $range->__toString();
+    }
+
+    protected function transferChildren($centerKey, &$lowerChild, &$upperChild)
+    {
+        $formerKey = null;
+        foreach ($this->value as $keyToMove) {
+            $comparationResult = $keyToMove->compareWith($centerKey);
+            $range = $this->getRangeString($formerKey, $keyToMove);
+            if ($comparationResult < 1) {
+                if (isset($this->subNodes[$range])) {
+                    $newKey = $comparationResult ? $range : $this->getRangeString($formerKey, null);
+                    $lowerChild->setSubNode($newKey, $this->subNodes[$range]);
+                }
+            } else {
+                if (isset($this->subNodes[$range])) {
+                    $newKey = ($formerKey->compareWith($centerKey)) ? $range : $this->getRangeString(null, $keyToMove);
+                    $upperChild->setSubNode($newKey, $this->subNodes[$range]);
+                }
+            }
+            $formerKey = $keyToMove;
+        }
+        $range = $this->getRangeString($formerKey, null);
+        if (isset($this->subNodes[$range])) {
+            $upperChild->setSubNode($range, $this->subNodes[$range]);
+        }
+    }
+
+    public function setSubNode($key, $indexToSet)
+    {
+        $this->subNodes[$key] = $indexToSet;
     }
 
     /**
@@ -169,15 +208,11 @@ class BNode extends AbstractNode
         $subNodes = $formerSubNode->getSubNodes();
         $keyToFix = $fixedKey = null;
         if ($keyToAdd->compareWith($formerLowerIndexedKey) == -1) {
-            $range = new Range($keyToAdd, $formerLowerIndexedKey);
-            $fixedKey = $range->__toString();
-            $range = new Range($keyToAdd, null);
-            $keyToFix = $range->__toString();
+            $fixedKey = $this->getRangeString($keyToAdd, $formerLowerIndexedKey);
+            $keyToFix = $this->getRangeString($keyToAdd, null);
         } else if ($keyToAdd->compareWith($formerUpperIndexedKey) == 1) {
-            $range = new Range($formerUpperIndexedKey, $keyToAdd);
-            $fixedKey = $range->__toString();
-            $range = new Range($keyToAdd, null);
-            $keyToFix = $range->__toString();
+            $fixedKey = $this->getRangeString($formerUpperIndexedKey, $keyToAdd);
+            $keyToFix = $this->getRangeString(null, $keyToAdd);
         }
 
         $this->insertItems($keyToAdd);

@@ -64,11 +64,25 @@ class BTreeTest extends TestCase
         $this->assertEquals(1, $this->_subject->getDepth());
     }
 
-    public function testFirstChildNodeSplit()
+    public function testFirstLeftChildNodeSplit()
     {
         $indexes = $this->insertSequence(2, 4, 3, 1, 0);
         $this->assertEquals($indexes, $this->_subject->dump());
         $this->assertEquals(1, $this->_subject->getDepth());
+    }
+
+    public function testFirstRightChildNodeSplit()
+    {
+        $indexes = $this->insertSequence(0, 1, 2, 3, 4);
+        $this->assertEquals($indexes, $this->_subject->dump());
+        $this->assertEquals(1, $this->_subject->getDepth());
+    }
+
+    public function testDepthOf2()
+    {
+        $indexes = $this->insertSequence(2, 4, 3, 1, 0, 10, 16);
+        $this->assertEquals($indexes, $this->_subject->dump());
+        $this->assertEquals(2, $this->_subject->getDepth());
     }
 
     public function testPrune()
