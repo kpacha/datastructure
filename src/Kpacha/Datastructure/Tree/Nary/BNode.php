@@ -3,6 +3,7 @@
 namespace Kpacha\Datastructure\Tree\Nary;
 
 use Kpacha\Datastructure\Tree\AbstractNode;
+use Kpacha\Datastructure\Index;
 use \MultipleIterator;
 use \ArrayIterator;
 
@@ -19,10 +20,12 @@ class BNode extends AbstractNode
     protected $minRange;
     protected $maxRange;
     protected $subNodes = array();
+    protected $parent = null;
 
-    public function __construct($items, $minRange = self::MIN_RANGE)
+    public function __construct($items, &$parent = null, $minRange = self::MIN_RANGE)
     {
         parent::__construct((is_array($items) ? $items : array($items->key => $items)));
+        $this->parent = $parent;
         $this->minRange = $minRange;
         $this->maxRange = 2 * $minRange;
     }
@@ -87,7 +90,11 @@ class BNode extends AbstractNode
     {
         $depth = 1;
         if ($this->hasChildren()) {
-            $depth += $this->getChildDepth($this->subNodes[0]);
+            $randomSubNode = null;
+            do {
+                $randomSubNode = $this->subNodes[array_rand($this->subNodes)];
+            } while (!$randomSubNode);
+            $depth += $this->getChildDepth($randomSubNode);
         }
         return $depth;
     }
@@ -134,11 +141,13 @@ class BNode extends AbstractNode
             unset($chunks[2]);
         }
 
-        $lowerChild = new BNode($chunks[0]);
-        $upperChild = new BNode($chunks[1]);
+        $lowerRange = new Range(null, $centerKey);
+        $lowerChild = new BNode($chunks[0], $this);
+        $upperRange = new Range($centerKey, null);
+        $upperChild = new BNode($chunks[1], $this);
 
         $this->value = array($centerKey);
-        $this->subNodes = array($lowerChild, $upperChild);
+        $this->subNodes = array($lowerRange->__toString() => $lowerChild, $upperRange->__toString() => $upperChild);
     }
 
     public function getSubNodeWhereInsert($item)
@@ -158,6 +167,72 @@ class BNode extends AbstractNode
             }
         }
         return $subNode;
+    }
+
+    /**
+     * remove a subnode
+     * @param BNode $node
+     */
+    public function removeSubNode($node)
+    {
+        foreach ($this->subNodes as $key => $subNode) {
+            if ($node === $subNode) {
+                $this->subNodes[$key] = null;
+                unset($this->subNodes[$key]);
+                break;
+            }
+        }
+    }
+
+    /**
+     * get all the subnodes
+     * @return array
+     */
+    public function getSubNodes()
+    {
+        return $this->subNodes;
+    }
+
+    /**
+     * Add a subnode
+     * @param String $key
+     * @param BNode $value
+     */
+    public function setSubNode($key, $value)
+    {
+        $this->subNodes[$key] = $value;
+    }
+
+    /**
+     * set the parent of the node
+     * @param BNode $root
+     */
+    public function setParent($root)
+    {
+        $this->parent = $root;
+    }
+
+    /**
+     * insert new Index into the key set
+     * @param \Kpacha\Datastructure\Index $item
+     */
+    public function insertItems(Index $item)
+    {
+        if (!is_array($item)) {
+            $item = array($item);
+        }
+        foreach ($item as $newItem) {
+            $this->value[] = $newItem;
+        }
+        usort($this->value, array('\Kpacha\Datastructure\Index', 'compare'));
+    }
+
+    /**
+     * sort the subnodes
+     */
+    public function fixRangeKeys()
+    {
+        ksort($this->subNodes);
     }
 
 }

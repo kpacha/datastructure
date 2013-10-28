@@ -15,30 +15,31 @@ class BTree extends AbstractTree
     const MIN_RANGE = 1;
 
     protected $minRange;
+    protected $maxRange;
 
     public function __construct($minRange = self::MIN_RANGE)
     {
         parent::__construct();
         $this->minRange = $minRange;
+        $this->maxRange = 2 * $minRange;
     }
 
-    protected function createNode($item)
+    protected function createNode($item, $parentNode = null)
     {
-        return new BNode($item, $this->minRange);
+        return new BNode($item, $parentNode, $this->minRange);
     }
 
-    protected function insertItem($item, &$subtree)
+    protected function insertItem($item, &$subtree, &$parentNode = null)
     {
         if ($subtree === null) {
-            $subtree = $this->createNode($item);
+            $subtree = $this->createNode($item, $parentNode);
         } else {
             if (!$subtree->hasChildren()) {
-                $subtree->value[] = $item;
-                $this->sortRootKeys($subtree);
-                $this->checkAndSplit($subtree);
+                $subtree->insertItems($item);
+                $this->check($subtree, $parentNode);
             } else {
                 $subNode = $subtree->getSubNodeWhereInsert($item);
-                $this->insertItem($item, $subNode);
+                $this->insertItem($item, $subNode, $subtree);
             }
         }
     }
@@ -49,22 +50,31 @@ class BTree extends AbstractTree
     }
 
     /**
-     * sort the keys from the root node of the subtree
-     * @param BNode $subtree
-     */
-    protected function sortRootKeys(&$subtree)
-    {
-        usort($subtree->value, array('\Kpacha\Datastructure\Index', 'compare'));
-    }
-
-    /**
      * if the node has more keys than (2 * minRange), split it!
      * @param BNode $subtree
+     * @param BNode $formerRoot
      */
-    protected function checkAndSplit(&$subtree)
+    protected function check(&$subtree, &$formerRoot)
     {
-        if (count($subtree->value) > 2 * $this->minRange) {
+        if (count($subtree->value) > $this->maxRange) {
             $subtree->split();
+            if ($formerRoot) {
+                $this->merge($subtree, $formerRoot);
+            }
+        }
+    }
+
+    protected function merge(&$subject, &$root)
+    {
+        if (count($root->value) < $this->maxRange) {
+            $root->removeSubNode($subject);
+            $root->insertItems($subject->value);
+            $subNodes = $subject->getSubNodes();
+            foreach ($subNodes as $key => $subtree) {
+                $subtree->setParent($root);
+                $root->setSubNode($key, $subtree);
+            }
+            $root->fixRangeKeys();
         }
     }
 
