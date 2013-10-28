@@ -39,7 +39,8 @@ class BTree extends AbstractTree
                     $subtree->split();
                 }
             } else {
-                $this->insertItem($item, $subtree->getSubNodeWhereInsert($item));
+                $subNode = $subtree->getSubNodeWhereInsert($item);
+                $this->insertItem($item, $subNode);
             }
         }
     }
