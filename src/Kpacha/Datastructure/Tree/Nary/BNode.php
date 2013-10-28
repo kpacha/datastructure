@@ -21,10 +21,9 @@ class BNode extends AbstractNode
     protected $subNodes = array();
     protected $parent = null;
 
-    public function __construct($items, &$parent = null, $minRange = self::MIN_RANGE)
+    public function __construct($items,  $minRange = self::MIN_RANGE)
     {
         parent::__construct((is_array($items) ? $items : array($items->key => $items)));
-        $this->parent = $parent;
         $this->minRange = $minRange;
         $this->maxRange = 2 * $minRange;
     }
@@ -141,12 +140,56 @@ class BNode extends AbstractNode
         }
 
         $lowerRange = new Range(null, $centerKey);
-        $lowerChild = new BNode($chunks[0], $this);
+        $lowerChild = new BNode($chunks[0]);
+        $lowerChild->setParent($this);
         $upperRange = new Range($centerKey, null);
-        $upperChild = new BNode($chunks[1], $this);
+        $upperChild = new BNode($chunks[1]);
+        $upperChild->setParent($this);
 
         $this->value = array($centerKey);
         $this->subNodes = array($lowerRange->__toString() => $lowerChild, $upperRange->__toString() => $upperChild);
+
+        if ($this->parent) {
+            $this->parent->merge($this);
+            $this->subNodes = $this->value = null;
+        }
+    }
+
+    /**
+     * merge the node with the former subnode (now it has just one key and two subnodes, because it is splitted)
+     * @param BNode $formerSubNode
+     */
+    public function merge($formerSubNode)
+    {
+        $this->removeSubNode($formerSubNode);
+        $keys = array_keys($this->value);
+        $formerLowerIndexedKey = $this->value[$keys[0]];
+        $formerUpperIndexedKey = $this->value[$keys[count($keys) - 1]];
+        $keyToAdd = array_pop($formerSubNode->value);
+        $subNodes = $formerSubNode->getSubNodes();
+        $keyToFix = $fixedKey = null;
+        if ($keyToAdd->compareWith($formerLowerIndexedKey) == -1) {
+            $range = new Range($keyToAdd, $formerLowerIndexedKey);
+            $fixedKey = $range->__toString();
+            $range = new Range($keyToAdd, null);
+            $keyToFix = $range->__toString();
+        } else if ($keyToAdd->compareWith($formerUpperIndexedKey) == 1) {
+            $range = new Range($formerUpperIndexedKey, $keyToAdd);
+            $fixedKey = $range->__toString();
+            $range = new Range($keyToAdd, null);
+            $keyToFix = $range->__toString();
+        }
+
+        $this->insertItems($keyToAdd);
+        foreach ($subNodes as $key => $subtree) {
+            $subtree->setParent($this);
+            if ($key === $keyToFix) {
+                $key = $fixedKey;
+            }
+            $this->subNodes[$key] = $subtree;
+        }
+        $this->fixRangeKeys();
+        $this->check();
     }
 
     public function getSubNodeWhereInsert($item)
@@ -193,16 +236,6 @@ class BNode extends AbstractNode
     }
 
     /**
-     * Add a subnode
-     * @param String $key
-     * @param BNode $value
-     */
-    public function setSubNode($key, $value)
-    {
-        $this->subNodes[$key] = $value;
-    }
-
-    /**
      * set the parent of the node
      * @param BNode $root
      */
@@ -226,10 +259,17 @@ class BNode extends AbstractNode
         usort($this->value, array('\Kpacha\Datastructure\Index', 'compare'));
     }
 
+    public function check()
+    {
+        if (count($this->value) > $this->maxRange) {
+            $this->split();
+        }
+    }
+
     /**
      * sort the subnodes
      */
-    public function fixRangeKeys()
+    protected function fixRangeKeys()
     {
         ksort($this->subNodes);
     }

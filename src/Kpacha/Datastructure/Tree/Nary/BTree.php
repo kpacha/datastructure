@@ -24,22 +24,22 @@ class BTree extends AbstractTree
         $this->maxRange = 2 * $minRange;
     }
 
-    protected function createNode($item, $parentNode = null)
+    protected function createNode($item)
     {
-        return new BNode($item, $parentNode, $this->minRange);
+        return new BNode($item, $this->minRange);
     }
 
-    protected function insertItem($item, &$subtree, &$parentNode = null)
+    protected function insertItem($item, &$subtree)
     {
         if ($subtree === null) {
-            $subtree = $this->createNode($item, $parentNode);
+            $subtree = $this->createNode($item);
         } else {
             if (!$subtree->hasChildren()) {
                 $subtree->insertItems($item);
-                $this->check($subtree, $parentNode);
+                $subtree->check();
             } else {
                 $subNode = $subtree->getSubNodeWhereInsert($item);
-                $this->insertItem($item, $subNode, $subtree);
+                $this->insertItem($item, $subNode);
             }
         }
     }
@@ -47,35 +47,6 @@ class BTree extends AbstractTree
     protected function removeItem($item, &$subtree)
     {
         throw new Exception('Unimplemented method!');
-    }
-
-    /**
-     * if the node has more keys than (2 * minRange), split it!
-     * @param BNode $subtree
-     * @param BNode $formerRoot
-     */
-    protected function check(&$subtree, &$formerRoot)
-    {
-        if (count($subtree->value) > $this->maxRange) {
-            $subtree->split();
-            if ($formerRoot) {
-                $this->merge($subtree, $formerRoot);
-            }
-        }
-    }
-
-    protected function merge(&$subject, &$root)
-    {
-        if (count($root->value) < $this->maxRange) {
-            $root->removeSubNode($subject);
-            $root->insertItems($subject->value);
-            $subNodes = $subject->getSubNodes();
-            foreach ($subNodes as $key => $subtree) {
-                $subtree->setParent($root);
-                $root->setSubNode($key, $subtree);
-            }
-            $root->fixRangeKeys();
-        }
     }
 
 }

@@ -21,8 +21,13 @@ class Range
 
     public function __toString()
     {
-        $from = ($this->from) ? $this->from->key : null;
-        $to = ($this->to) ? $this->to->key : null;
+        $from = $to = null;
+        if ($this->from) {
+            $from = is_int($this->from->key) ? sprintf('%1$09d', $this->from->key) : $this->from->key;
+        }
+        if ($this->to) {
+            $to = is_int($this->to->key) ? sprintf('%1$09d', $this->to->key) : $this->to->key;
+        }
         return "$from -> $to";
     }
 
