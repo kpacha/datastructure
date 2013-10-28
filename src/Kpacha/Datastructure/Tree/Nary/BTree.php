@@ -33,11 +33,9 @@ class BTree extends AbstractTree
             $subtree = $this->createNode($item);
         } else {
             if (!$subtree->hasChildren()) {
-                $subtree->value[$item->key] = $item;
-                usort($subtree->value, array('\Kpacha\Datastructure\Index', 'compare'));
-                if (count($subtree->value) > 2 * $this->minRange) {
-                    $subtree->split();
-                }
+                $subtree->value[] = $item;
+                $this->sortRootKeys($subtree);
+                $this->checkAndSplit($subtree);
             } else {
                 $subNode = $subtree->getSubNodeWhereInsert($item);
                 $this->insertItem($item, $subNode);
@@ -48,6 +46,26 @@ class BTree extends AbstractTree
     protected function removeItem($item, &$subtree)
     {
         throw new Exception('Unimplemented method!');
+    }
+
+    /**
+     * sort the keys from the root node of the subtree
+     * @param BNode $subtree
+     */
+    protected function sortRootKeys(&$subtree)
+    {
+        usort($subtree->value, array('\Kpacha\Datastructure\Index', 'compare'));
+    }
+
+    /**
+     * if the node has more keys than (2 * minRange), split it!
+     * @param BNode $subtree
+     */
+    protected function checkAndSplit(&$subtree)
+    {
+        if (count($subtree->value) > 2 * $this->minRange) {
+            $subtree->split();
+        }
     }
 
 }

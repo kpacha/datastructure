@@ -137,7 +137,7 @@ class BNode extends AbstractNode
         $lowerChild = new BNode($chunks[0]);
         $upperChild = new BNode($chunks[1]);
 
-        $this->value = array($centerKey->key => $centerKey);
+        $this->value = array($centerKey);
         $this->subNodes = array($lowerChild, $upperChild);
     }
 
