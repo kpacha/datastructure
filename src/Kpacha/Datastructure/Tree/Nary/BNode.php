@@ -3,7 +3,6 @@
 namespace Kpacha\Datastructure\Tree\Nary;
 
 use Kpacha\Datastructure\Tree\AbstractNode;
-use Kpacha\Datastructure\Index;
 use \MultipleIterator;
 use \ArrayIterator;
 
@@ -213,10 +212,10 @@ class BNode extends AbstractNode
     }
 
     /**
-     * insert new Index into the key set
-     * @param \Kpacha\Datastructure\Index $item
+     * insert the received Index(es) into the key set
+     * @param \Kpacha\Datastructure\Index|array $item
      */
-    public function insertItems(Index $item)
+    public function insertItems($item)
     {
         if (!is_array($item)) {
             $item = array($item);
