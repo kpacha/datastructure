@@ -23,75 +23,70 @@ class BTreeTest extends TestCase
 
     public function testEmpty()
     {
-        $this->assertEquals(array(), $this->_subject->dump());
-        $this->assertTrue($this->_subject->isEmpty());
-        $this->assertEquals(0, $this->_subject->getDepth());
+        $this->doTest(array(), true, 0);
     }
 
     public function testFirstInsert()
     {
         $indexes = $this->insertSequence(1);
         $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertFalse($this->_subject->isEmpty());
-        $this->assertEquals(0, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 0);
     }
 
     public function testSecondInsertUnsorted()
     {
         $indexes = $this->insertSequence(2, 1);
-        $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertEquals(0, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 0);
     }
 
     public function testSplitDetection()
     {
         $indexes = $this->insertSequence(1, 2, 3);
-        $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertEquals(1, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 1);
     }
 
     public function testFourthInsertion()
     {
         $indexes = $this->insertSequence(1, 2, 4, 3);
-        $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertEquals(1, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 1);
     }
 
     public function testInsertIntoFirstChildNode()
     {
         $indexes = $this->insertSequence(2, 4, 3, 1);
-        $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertEquals(1, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 1);
     }
 
     public function testFirstLeftChildNodeSplit()
     {
         $indexes = $this->insertSequence(2, 4, 3, 1, 0);
-        $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertEquals(1, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 1);
     }
 
     public function testFirstRightChildNodeSplit()
     {
         $indexes = $this->insertSequence(0, 1, 2, 3, 4);
-        $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertEquals(1, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 1);
     }
 
     public function testDepthOf2()
     {
         $indexes = $this->insertSequence(2, 4, 3, 1, 0, 10, 16);
-        $this->assertEquals($indexes, $this->_subject->dump());
-        $this->assertEquals(2, $this->_subject->getDepth());
+        $this->doTest($indexes, false, 2);
     }
 
     public function testPrune()
     {
         $this->insertSequence(2, 4, 3, 1, 0);
         $this->_subject->prune();
-        $this->assertTrue($this->_subject->isEmpty());
-        $this->assertEquals(0, $this->_subject->getDepth());
-        $this->assertEquals(array(), $this->_subject->dump());
+        $this->testEmpty();
+    }
+    
+    private function doTest($expectedDump, $isEmpty, $expectedDepth)
+    {
+        $this->assertEquals($expectedDump, $this->_subject->dump());
+        $this->assertEquals($isEmpty, $this->_subject->isEmpty());
+        $this->assertEquals($expectedDepth, $this->_subject->getDepth());
     }
 
     private function insertSequence()
