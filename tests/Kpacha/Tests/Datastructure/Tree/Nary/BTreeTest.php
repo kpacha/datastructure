@@ -81,7 +81,13 @@ class BTreeTest extends TestCase
         $this->_subject->prune();
         $this->testEmpty();
     }
-    
+
+    public function testDepthOf3()
+    {
+        $indexes = $this->insertSequence(2, 4, 3, 1, 0, 10, 16, 19, 30, 36, 40, 37, 50, 55, 60);
+        $this->doTest($indexes, false, 3);
+    }
+
     private function doTest($expectedDump, $isEmpty, $expectedDepth)
     {
         $this->assertEquals($expectedDump, $this->_subject->dump());

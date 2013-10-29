@@ -47,8 +47,8 @@ class BNode extends AbstractNode
     protected function getMultipleIterator()
     {
         $multiIterator = new MultipleIterator(MultipleIterator::MIT_NEED_ANY | MultipleIterator::MIT_KEYS_ASSOC);
-        $multiIterator->attachIterator(new ArrayIterator($this->value), 'keys');
-        $multiIterator->attachIterator(new ArrayIterator($this->subNodes), 'subNodes');
+        $multiIterator->attachIterator(new ArrayIterator(($this->value)? : array()), 'keys');
+        $multiIterator->attachIterator(new ArrayIterator(($this->subNodes)? : array()), 'subNodes');
         return $multiIterator;
     }
 
@@ -173,7 +173,7 @@ class BNode extends AbstractNode
         }
         $range = $this->getRangeString($prevKey, null);
         if (isset($this->subNodes[$range])) {
-            $upperChild->setSubNode($range, $this->subNodes[$range]);
+            $this->attachNodeTo($upperChild, $this->subNodes[$range], $range);
         }
     }
 
@@ -182,14 +182,21 @@ class BNode extends AbstractNode
         $comparationResult = $keyToMove->compareWith($centerKey);
         $range = $this->getRangeString($prevKey, $keyToMove);
         if (isset($this->subNodes[$range])) {
+            $subnode = $this->subNodes[$range];
             if ($comparationResult < 1) {
                 $newKey = $comparationResult ? $range : $this->getRangeString($prevKey, null);
-                $lowerChild->setSubNode($newKey, $this->subNodes[$range]);
+                $this->attachNodeTo($lowerChild, $subnode, $newKey);
             } else {
                 $newKey = ($prevKey->compareWith($centerKey)) ? $range : $this->getRangeString(null, $keyToMove);
-                $upperChild->setSubNode($newKey, $this->subNodes[$range]);
+                $this->attachNodeTo($upperChild, $subnode, $newKey);
             }
         }
+    }
+
+    protected function attachNodeTo(&$rootNode, $subNode, $key)
+    {
+        $subNode->setParent($rootNode);
+        $rootNode->setSubNode($key, $subNode);
     }
 
     public function setSubNode($key, $indexToSet)
