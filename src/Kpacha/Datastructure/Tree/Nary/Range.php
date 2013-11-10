@@ -10,8 +10,10 @@ namespace Kpacha\Datastructure\Tree\Nary;
 class Range
 {
 
-    var $from = null;
-    var $to = null;
+    const CONCATENATOR = ' -> ';
+
+    public $from = null;
+    public $to = null;
 
     public function __construct($from, $to)
     {
@@ -23,12 +25,17 @@ class Range
     {
         $from = $to = null;
         if ($this->from) {
-            $from = is_int($this->from->key) ? sprintf('%1$09d', $this->from->key) : $this->from->key;
+            $from = $this->parseBoundary($this->from->key);
         }
         if ($this->to) {
-            $to = is_int($this->to->key) ? sprintf('%1$09d', $this->to->key) : $this->to->key;
+            $to = $this->parseBoundary($this->to->key);
         }
-        return "$from -> $to";
+        return $from . self::CONCATENATOR . $to;
+    }
+
+    private function parseBoundary($boundary)
+    {
+        return is_int($boundary) ? sprintf('%1$09d', $boundary) : $boundary;
     }
 
     static public function compare($range1, $range2)
@@ -61,6 +68,19 @@ class Range
             $isValid = isset($this->from) || isset($this->to);
         }
         return $isValid;
+    }
+
+    public function isInRange($value)
+    {
+        $value = $this->parseBoundary($value);
+        return ($this->from === null || strcmp($this->from, $value) < 0) &&
+                ($this->to === null || strcmp($this->to, $value) > 0);
+    }
+
+    public static function getRange($stringRange)
+    {
+        $boundaries = explode(self::CONCATENATOR, $stringRange);
+        return new self($boundaries[0], $boundaries[1]);
     }
 
 }

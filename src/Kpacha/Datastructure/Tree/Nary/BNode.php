@@ -117,13 +117,28 @@ class BNode extends AbstractNode
     public function search($item)
     {
         $result = null;
+        $ranges = array_keys($this->subNodes);
+        $totalItems = count($this->value);
         foreach ($this->value as $storedItem) {
             if ($storedItem->key == $item) {
                 $result = $storedItem;
                 break;
             }
         }
+        if (!$result) {
+            for ($current = 0; $current < $totalItems; $current++) {
+                if (isset($ranges[$current]) && $this->getRange($ranges[$current])->isInRange($item)) {
+                    $result = $this->subNodes[$ranges[$current]]->search($item);
+                    break;
+                }
+            }
+        }
         return $result;
+    }
+
+    private function getRange($stringRange)
+    {
+        return Range::getRange($stringRange);
     }
 
     /**
@@ -218,21 +233,21 @@ class BNode extends AbstractNode
         $this->removeSubNode($formerSubNode);
         $keyToAdd = array_pop($formerSubNode->value);
         $subNodes = $formerSubNode->getSubNodes();
-        $keyToFixData = $this->getKeyToFixData($keyToAdd);
+        $rangeKeyToFixData = $this->getRangeKeyToFixData($keyToAdd);
 
         $this->insertItems($keyToAdd);
         foreach ($subNodes as $key => $subtree) {
             $subtree->setParent($this);
-            if ($key === $keyToFixData["keyToFix"]) {
-                $key = $keyToFixData["fixedKey"];
+            if ($key === $rangeKeyToFixData["keyToFix"]) {
+                $key = $rangeKeyToFixData["fixedKey"];
             }
             $this->subNodes[$key] = $subtree;
         }
         $this->fixRangeKeys();
         $this->check();
     }
-    
-    private function getKeyToFixData($keyToAdd)
+
+    private function getRangeKeyToFixData($keyToAdd)
     {
         $keys = array_keys($this->value);
         $formerLowerIndexedKey = $this->value[$keys[0]];
