@@ -103,6 +103,11 @@ class BTreeTest extends TestCase
         $this->assertEquals($newIndex, $this->_subject->search($key));
     }
 
+    public function testSearchAndNotFound()
+    {
+        $this->assertNull($this->_subject->search(8));
+    }
+
     private function doTest($expectedDump, $isEmpty, $expectedDepth)
     {
         $this->assertEquals($expectedDump, $this->_subject->dump());
