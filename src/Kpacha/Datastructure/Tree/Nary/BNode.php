@@ -116,22 +116,38 @@ class BNode extends AbstractNode
 
     public function search($item)
     {
+        $result = $this->serchInLocalStored($item);
+        if (!$result) {
+            $result = $this->searchInSubNodes($item);
+        }
+        return $result;
+    }
+
+    private function serchInLocalStored($item)
+    {
         $result = null;
-        $ranges = array_keys($this->subNodes);
-        $totalItems = count($this->value);
         foreach ($this->value as $storedItem) {
             if ($storedItem->key == $item) {
                 $result = $storedItem;
                 break;
             }
         }
-        if (!$result) {
-            for ($current = 0; $current < $totalItems; $current++) {
-                if (isset($ranges[$current]) && $this->getRange($ranges[$current])->isInRange($item)) {
-                    $result = $this->subNodes[$ranges[$current]]->search($item);
-                    break;
-                }
+        return $result;
+    }
+
+    private function searchInSubNodes($item)
+    {
+        $result = null;
+        $ranges = array_keys($this->subNodes);
+        $totalItems = count($this->value);
+        for ($current = 0; $current < $totalItems; $current++) {
+            if (isset($ranges[$current]) && $this->getRange($ranges[$current])->isInRange($item)) {
+                $result = $this->subNodes[$ranges[$current]]->search($item);
+                break;
             }
+        }
+        if (!$result && isset($ranges[$totalItems]) && $this->getRange($ranges[$totalItems])->isInRange($item)) {
+            $result = $this->subNodes[$ranges[$totalItems]]->search($item);
         }
         return $result;
     }

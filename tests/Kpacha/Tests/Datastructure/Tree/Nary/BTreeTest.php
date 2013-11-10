@@ -95,9 +95,24 @@ class BTreeTest extends TestCase
         $this->doTest($indexes, false, 4);
     }
 
+    public function testSearchAndNotFound()
+    {
+        $this->insertSequence(2, 4, 3, 1, 0);
+        $this->assertNull($this->_subject->search(8));
+    }
+
+    public function testSearchAndFoundAtRoot()
+    {
+        $keyToFind = 10;
+        $indexToFind = $this->buildIndex($keyToFind);
+        $this->_subject->insert($indexToFind);
+        $this->_subject->insert($this->buildIndex(0));
+        $this->assertEquals($indexToFind, $this->_subject->search($keyToFind));
+    }
+
     public function testSearchAndFoundAtFirstChild()
     {
-        $keyToFind=1;
+        $keyToFind = 1;
         $indexToFind = $this->buildIndex($keyToFind);
         $this->_subject->insert($indexToFind);
         $this->_subject->insert($this->buildIndex(2));
@@ -105,18 +120,13 @@ class BTreeTest extends TestCase
         $this->assertEquals($indexToFind, $this->_subject->search($keyToFind));
     }
 
-    public function testSearchAndNotFound()
+    public function testSearch()
     {
-        $this->assertNull($this->_subject->search(8));
-    }
-
-    public function testSearchAndFoundAtRoot()
-    {
-        $keyToFind=10;
-        $indexToFind = $this->buildIndex($keyToFind);
-        $this->_subject->insert($indexToFind);
-        $this->_subject->insert($this->buildIndex(0));
-        $this->assertEquals($indexToFind, $this->_subject->search($keyToFind));
+        $indexes = $this->insertSequence(0, 1, 2, 3, 4, 10, 16, 19, 30, 36, 37, 40, 50, 55, 60, 61, 62, 65, 66, 67, 68,
+                75, 76, 80, 81, 82, 83, 84, 85, 86, 87);
+        $this->assertEquals($indexes[4], $this->_subject->search(4));
+        $this->assertEquals($indexes[10], $this->_subject->search(37));
+        $this->assertEquals($indexes[count($indexes) - 1], $this->_subject->search(87));
     }
 
     private function doTest($expectedDump, $isEmpty, $expectedDepth)

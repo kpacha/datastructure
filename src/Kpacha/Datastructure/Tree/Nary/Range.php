@@ -17,8 +17,8 @@ class Range
 
     public function __construct($from, $to)
     {
-        $this->from = $from;
-        $this->to = $to;
+        $this->from = ($from === '') ? null : $from;
+        $this->to = ($to === '') ? null : $to;
     }
 
     public function __toString()
