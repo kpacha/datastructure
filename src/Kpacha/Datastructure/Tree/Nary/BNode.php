@@ -138,10 +138,8 @@ class BNode extends AbstractNode
             unset($chunks[2]);
         }
 
-        $lowerChild = new BNode($chunks[0]);
-        $lowerChild->setParent($this);
-        $upperChild = new BNode($chunks[1]);
-        $upperChild->setParent($this);
+        $lowerChild = $this->createChild($chunks[0]);
+        $upperChild = $this->createChild($chunks[1]);
 
         $this->transferChildren($centerKey, $lowerChild, $upperChild);
 
@@ -155,6 +153,13 @@ class BNode extends AbstractNode
             $this->parent->merge($this);
             $this->subNodes = $this->value = null;
         }
+    }
+
+    private function createChild($data)
+    {
+        $child = new BNode($data);
+        $child->setParent($this);
+        return $child;
     }
 
     protected function getRangeString($from, $to)
