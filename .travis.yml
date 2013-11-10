@@ -10,4 +10,7 @@ before_script:
 
 script:
     - mkdir -p build/logs
-    - vendor/kpacha/travis-phpqa/bin/phpqa -v
+    - vendor/bin/phpunit -c phpunit.xml.dist
+
+after_script:
+    - php vendor/bin/coveralls -v
