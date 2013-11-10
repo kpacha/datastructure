@@ -140,14 +140,19 @@ class BNode extends AbstractNode
         $result = null;
         $ranges = array_keys($this->subNodes);
         $totalItems = count($this->value);
-        for ($current = 0; $current < $totalItems; $current++) {
-            if (isset($ranges[$current]) && $this->getRange($ranges[$current])->isInRange($item)) {
-                $result = $this->subNodes[$ranges[$current]]->search($item);
+        for ($current = 0; $current <= $totalItems; $current++) {
+            if(($result = $this->searchInSubNode($ranges, $current, $item))){
                 break;
             }
         }
-        if (!$result && isset($ranges[$totalItems]) && $this->getRange($ranges[$totalItems])->isInRange($item)) {
-            $result = $this->subNodes[$ranges[$totalItems]]->search($item);
+        return $result;
+    }
+
+    private function searchInSubNode($ranges, $current, $item)
+    {
+        $result = null;
+        if (isset($ranges[$current]) && $this->getRange($ranges[$current])->isInRange($item)) {
+            $result = $this->subNodes[$ranges[$current]]->search($item);
         }
         return $result;
     }
