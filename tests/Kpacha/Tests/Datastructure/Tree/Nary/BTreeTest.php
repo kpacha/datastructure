@@ -95,6 +95,14 @@ class BTreeTest extends TestCase
         $this->doTest($indexes, false, 4);
     }
 
+    public function testSearchAndFoundAtRoot()
+    {
+        $key=10;
+        $newIndex = $this->buildIndex($key);
+        $this->_subject->insert($newIndex);
+        $this->assertEquals($newIndex, $this->_subject->search($key));
+    }
+
     private function doTest($expectedDump, $isEmpty, $expectedDepth)
     {
         $this->assertEquals($expectedDump, $this->_subject->dump());

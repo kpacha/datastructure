@@ -116,15 +116,14 @@ class BNode extends AbstractNode
 
     public function search($item)
     {
-        throw new Exception('Unimplemented method!');
-//        $result = null;
-//        foreach ($this->items as $storedItem) {
-//            if ($storedItem->key == $item) {
-//                $result = $this;
-//                break;
-//            }
-//        }
-//        return $result;
+        $result = null;
+        foreach ($this->value as $storedItem) {
+            if ($storedItem->key == $item) {
+                $result = $storedItem;
+                break;
+            }
+        }
+        return $result;
     }
 
     /**
