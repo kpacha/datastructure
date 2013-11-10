@@ -189,11 +189,12 @@ class BNode extends AbstractNode
             $subnode = $this->subNodes[$range];
             if ($comparationResult < 1) {
                 $newKey = $comparationResult ? $range : $this->getRangeString($prevKey, null);
-                $this->attachNodeTo($lowerChild, $subnode, $newKey);
+                $targetChild = $lowerChild;
             } else {
                 $newKey = ($prevKey->compareWith($centerKey)) ? $range : $this->getRangeString(null, $keyToMove);
-                $this->attachNodeTo($upperChild, $subnode, $newKey);
+                $targetChild = $upperChild;
             }
+            $this->attachNodeTo($targetChild, $subnode, $newKey);
         }
     }
 
@@ -215,30 +216,36 @@ class BNode extends AbstractNode
     public function merge($formerSubNode)
     {
         $this->removeSubNode($formerSubNode);
-        $keys = array_keys($this->value);
-        $formerLowerIndexedKey = $this->value[$keys[0]];
-        $formerUpperIndexedKey = $this->value[$keys[count($keys) - 1]];
         $keyToAdd = array_pop($formerSubNode->value);
         $subNodes = $formerSubNode->getSubNodes();
-        $keyToFix = $fixedKey = null;
-        if ($keyToAdd->compareWith($formerLowerIndexedKey) == -1) {
-            $fixedKey = $this->getRangeString($keyToAdd, $formerLowerIndexedKey);
-            $keyToFix = $this->getRangeString($keyToAdd, null);
-        } else if ($keyToAdd->compareWith($formerUpperIndexedKey) == 1) {
-            $fixedKey = $this->getRangeString($formerUpperIndexedKey, $keyToAdd);
-            $keyToFix = $this->getRangeString(null, $keyToAdd);
-        }
+        $keyToFixData = $this->getKeyToFixData($keyToAdd);
 
         $this->insertItems($keyToAdd);
         foreach ($subNodes as $key => $subtree) {
             $subtree->setParent($this);
-            if ($key === $keyToFix) {
-                $key = $fixedKey;
+            if ($key === $keyToFixData["keyToFix"]) {
+                $key = $keyToFixData["fixedKey"];
             }
             $this->subNodes[$key] = $subtree;
         }
         $this->fixRangeKeys();
         $this->check();
+    }
+    
+    private function getKeyToFixData($keyToAdd)
+    {
+        $keys = array_keys($this->value);
+        $formerLowerIndexedKey = $this->value[$keys[0]];
+        $formerUpperIndexedKey = $this->value[$keys[count($keys) - 1]];
+        $result = array();
+        if ($keyToAdd->compareWith($formerLowerIndexedKey) == -1) {
+            $result["fixedKey"] = $this->getRangeString($keyToAdd, $formerLowerIndexedKey);
+            $result["keyToFix"] = $this->getRangeString($keyToAdd, null);
+        } else if ($keyToAdd->compareWith($formerUpperIndexedKey) == 1) {
+            $result["fixedKey"] = $this->getRangeString($formerUpperIndexedKey, $keyToAdd);
+            $result["keyToFix"] = $this->getRangeString(null, $keyToAdd);
+        }
+        return $result;
     }
 
     public function getSubNodeWhereInsert($item)
