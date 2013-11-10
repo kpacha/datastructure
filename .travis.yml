@@ -5,8 +5,9 @@ php:
   - 5.4
   - 5.5
 
-before_script: composer install
+before_script:
+    - COMPOSER_ROOT_VERSION=dev-master composer --prefer-source --dev install
 
 script:
-    - vendor/bin/phpunit -c phpunit.xml.dist
-
+    - mkdir -p build/logs
+    - vendor/kpacha/travis-phpqa/bin/phpqa -v
